@@ -6,7 +6,8 @@ from typing import List
 # from .types_ import *
 
 
-class VanillaVAE(BaseVAE):
+# class VanillaVAE(BaseVAE):
+class VanillaVAE(nn.Module):
     def __init__(self,
                  in_channels: int,
                  latent_dim: int,
@@ -24,8 +25,7 @@ class VanillaVAE(BaseVAE):
         for h_dim in hidden_dims:
             modules.append(
                 nn.Sequential(
-                    nn.Conv2d(in_channels, out_channels=h_dim,
-                              kernel_size= 3, stride= 2, padding  = 1),
+                    nn.Conv2d(in_channels, out_channels=h_dim, kernel_size=3, stride=2, padding=1),
                     nn.BatchNorm2d(h_dim),
                     nn.LeakyReLU())
             )
@@ -47,11 +47,12 @@ class VanillaVAE(BaseVAE):
             modules.append(
                 nn.Sequential(
                     nn.ConvTranspose2d(hidden_dims[i],
-                                       hidden_dims[i + 1],
-                                       kernel_size=3,
-                                       stride = 2,
-                                       padding=1,
-                                       output_padding=1),
+                        hidden_dims[i + 1],
+                        kernel_size=3,
+                        stride = 2,
+                        padding=1,
+                        output_padding=1
+                    ),
                     nn.BatchNorm2d(hidden_dims[i + 1]),
                     nn.LeakyReLU())
             )
@@ -170,3 +171,9 @@ class VanillaVAE(BaseVAE):
         """
 
         return self.forward(x)[0]
+
+
+if __name__ == "__main__":
+    model = VanillaVAE(3, 256)
+    model.encoder
+    model.decoder

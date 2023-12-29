@@ -30,6 +30,8 @@ class ConvBlock(nn.Module):
 
 
 class Encoder(nn.Module):
+    # def __init__(self, in_channels: int, latent_dim: int, hidden_dims: List) -> None:
+    # def __init__(self, in_channels: int) -> None:
     def __init__(self, in_channels: int, latent_dim: int) -> None:
         super().__init__()
 
@@ -43,20 +45,21 @@ class Encoder(nn.Module):
         self.mu_proj = nn.Linear(enc_out_dim, latent_dim)
         self.var_proj = nn.Linear(enc_out_dim, latent_dim)
 
-    def forward(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = self.conv_block1(x)
         x = self.conv_block2(x)
         x = self.conv_block3(x)
         x = self.conv_block4(x)
         x = self.conv_block5(x)
-
         x = torch.flatten(x, start_dim=1)
         mu = self.mu_proj(x)
         log_var = self.var_proj(x)
+        # return x
         return mu, log_var
 
 
 class Decoder(nn.Module):
+    # def __init__(self) -> None:
     def __init__(self, latent_dim: int) -> None:
         super().__init__()
 
@@ -73,7 +76,6 @@ class Decoder(nn.Module):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = self.code_proj(x)
         x = x.view(-1, 512, 2, 2)
-
         x = self.conv_block1(x)
         x = self.conv_block2(x)
         x = self.conv_block3(x)
@@ -89,13 +91,23 @@ class VAE(nn.Module):
         super().__init__()
 
         self.enc = Encoder(in_channels=in_channels, latent_dim=latent_dim)
+        # self.dec = Decoder()
         self.dec = Decoder(latent_dim)
 
+        # enc_out_dim = 512 * 2 * 2
+        # self.mu_proj = nn.Linear(enc_out_dim, latent_dim)
+        # self.var_proj = nn.Linear(enc_out_dim, latent_dim)
+        # self.code_proj = nn.Linear(latent_dim, enc_out_dim)
+
     def encode(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
+        # x = self.enc(x)
+        # x = torch.flatten(x, start_dim=1)
+        # mu = self.mu_proj(x)
+        # log_var = self.var_proj(x)
         mu, log_var = self.enc(x)
         return mu, log_var
 
-    def decode(self, z: torch.Tensor) -> torch.Tensor:
+    def decode(self, z: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
         x = self.dec(z)
         return x
 
