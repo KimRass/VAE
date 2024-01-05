@@ -177,3 +177,4 @@ if __name__ == "__main__":
     model = VanillaVAE(3, 256)
     model.encoder
     model.decoder
+    model.final_layer
