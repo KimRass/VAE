@@ -1,3 +1,5 @@
+# Latent Space Visualization
+
 # Theorectical Background
 ## 1) Bayes' Theorem [3]
 $$P(A \vert B) = \frac{P(B \vert A)P(A)}{P(B)}$$

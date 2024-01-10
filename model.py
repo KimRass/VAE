@@ -30,7 +30,7 @@ class ConvBlock(nn.Module):
 
 
 def get_dim(img_size: int):
-    return math.ceil(math.log2(img_size)) - 4
+    return math.ceil(math.log2(img_size)) - 3
 
 
 class Encoder(nn.Module):
@@ -39,12 +39,12 @@ class Encoder(nn.Module):
 
         self.conv_block1 = ConvBlock(channels, 32, transposed=False)
         self.conv_block2 = ConvBlock(32, 64, transposed=False)
-        self.conv_block3 = ConvBlock(64, 128, transposed=False)
-        self.conv_block4 = ConvBlock(128, 256, transposed=False)
-        self.conv_block5 = ConvBlock(256, 512, transposed=False)
+        self.conv_block3 = ConvBlock(64, 64, transposed=False)
+        self.conv_block4 = ConvBlock(64, 64, transposed=False)
+        # self.conv_block5 = ConvBlock(64, 64, transposed=False)
 
         enc_out_dim = get_dim(img_size)
-        in_features = 512 * enc_out_dim * enc_out_dim
+        in_features = 64 * enc_out_dim * enc_out_dim
         self.mean_proj = nn.Linear(in_features, latent_dim)
         self.log_var_proj = nn.Linear(in_features, latent_dim)
 
@@ -53,7 +53,7 @@ class Encoder(nn.Module):
         x = self.conv_block2(x)
         x = self.conv_block3(x)
         x = self.conv_block4(x)
-        x = self.conv_block5(x)
+        # x = self.conv_block5(x)
 
         x = torch.flatten(x, start_dim=1)
         mean = self.mean_proj(x)
@@ -67,12 +67,12 @@ class Decoder(nn.Module):
         super().__init__()
 
         self.dec_in_dim = get_dim(img_size)
-        out_features = 512 * self.dec_in_dim * self.dec_in_dim
+        out_features = 64 * self.dec_in_dim * self.dec_in_dim
         self.code_proj = nn.Linear(latent_dim, out_features)
 
-        self.conv_block1 = ConvBlock(512, 256, transposed=True)
-        self.conv_block2 = ConvBlock(256, 128, transposed=True)
-        self.conv_block3 = ConvBlock(128, 64, transposed=True)
+        # self.conv_block1 = ConvBlock(64, 64, transposed=True)
+        self.conv_block2 = ConvBlock(64, 64, transposed=True)
+        self.conv_block3 = ConvBlock(64, 64, transposed=True)
         self.conv_block4 = ConvBlock(64, 32, transposed=True)
         self.conv_block5 = ConvBlock(32, 32, transposed=True)
         self.conv = nn.Conv2d(32, channels, kernel_size=3, stride=1, padding=1, bias=False)
@@ -80,9 +80,9 @@ class Decoder(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = self.code_proj(x)
-        x = x.view(-1, 512, self.dec_in_dim, self.dec_in_dim)
+        x = x.view(-1, 64, self.dec_in_dim, self.dec_in_dim)
 
-        x = self.conv_block1(x)
+        # x = self.conv_block1(x)
         x = self.conv_block2(x)
         x = self.conv_block3(x)
         x = self.conv_block4(x)
@@ -93,11 +93,10 @@ class Decoder(nn.Module):
 
 
 class VAE(nn.Module):
-    def __init__(self, channels: int, img_size: int, latent_dim: int, recon_weight: int) -> None:
+    def __init__(self, channels: int, img_size: int, latent_dim: int) -> None:
         super().__init__()
 
         self.latent_dim = latent_dim
-        self.recon_weight = recon_weight
 
         self.enc = Encoder(channels=channels, img_size=img_size, latent_dim=latent_dim)
         self.dec = Decoder(channels=channels, img_size=img_size, latent_dim=latent_dim)
@@ -123,13 +122,18 @@ class VAE(nn.Module):
         return x, mean, var
 
     def get_loss(
-        self, recon_image: torch.Tensor, ori_image: torch.Tensor, mean: torch.Tensor, var: torch.Tensor,
+        self,
+        recon_image: torch.Tensor,
+        ori_image: torch.Tensor,
+        mean: torch.Tensor,
+        var: torch.Tensor,
+        recon_weight: int,
     # ) -> torch.Tensor:
     ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         recon_loss = F.mse_loss(recon_image, ori_image, reduction="mean")
         kld_loss = -0.5 * torch.mean(torch.sum(1 + torch.log(var) - mean ** 2 - var, dim=1), dim=0)
         # return self.recon_weight * recon_loss + kld_loss
-        loss = self.recon_weight * recon_loss + kld_loss
+        loss = recon_weight * recon_loss + kld_loss
         return loss, recon_loss, kld_loss
 
     def sample(self, n_samples: int, device: torch.device) -> torch.Tensor:
@@ -140,20 +144,20 @@ class VAE(nn.Module):
 
 if __name__ == "__main__":
     # img_size = 64
-    img_size = 32
-    latent_dim = 512
+    img_size = 28
+    latent_dim = 256
     recon_weight = 0.1
-    device = torch.device("mps")
+    device = torch.device("cpu")
 
     model = VAE(
-        channels=1, img_size=img_size, latent_dim=latent_dim, recon_weight=recon_weight,
+        channels=1, img_size=img_size, latent_dim=latent_dim,
     ).to(device)
-    ori_image = torch.randn(4, 3, img_size, img_size).to(device)
+    ori_image = torch.randn(4, 1, img_size, img_size).to(device)
+
     recon_image, mean, var = model(ori_image)
-    recon_image.shape, ori_image.shape
-    loss = model.get_loss(recon_image=recon_image, ori_image=ori_image, mean=mean, var=var)
+    loss = model.get_loss(
+        recon_image=recon_image, ori_image=ori_image, mean=mean, var=var, recon_weight=recon_weight,
+    )
 
     gen_image = model.sample(n_samples=8, device=device)
     print(gen_image.shape)
-
-    model
