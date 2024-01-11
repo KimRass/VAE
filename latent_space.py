@@ -17,8 +17,11 @@ def get_args(to_upperse=True):
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--seed", type=int, default=888, required=False)
-    parser.add_argument("--ckpt", type=str, required=True)
     parser.add_argument("--batch_size", type=int, default=64, required=False)
+    parser.add_argument(
+        "--target", type=str, choices=["mean", "std"], default="mean", required=False,
+    )
+    parser.add_argument("--model_params", type=str, required=True)
     parser.add_argument("--data_dir", type=str, required=True)
     parser.add_argument("--save_dir", type=str, required=True)
 
@@ -34,21 +37,24 @@ def get_args(to_upperse=True):
 
 
 @torch.no_grad()
-def plot_means(test_dl, model, device):
+def vis_latent_space(test_dl, model, target, device):
     model.eval()
 
-    means = list()
+    trgs = list()
     labels = list()
     for ori_image, label in tqdm(test_dl, leave=False):
         ori_image = ori_image.to(device)
-        recon_image, mean, var = model(ori_image)
-        means.append(mean.cpu().detach().numpy())
+        mean, var = model.encode(ori_image)
+        if target == "mean":
+            trgs.append(mean.cpu().detach().numpy())
+        elif target == "std":
+            trgs.append((var ** 0.5).cpu().detach().numpy())
         labels.append(label.cpu().detach().numpy())
-    cat_means = np.concatenate(means, axis=0)
+    cat_trgs = np.concatenate(trgs, axis=0)
     cat_labels = np.concatenate(labels, axis=0)
 
     fig, axes = plt.subplots(1, 1, figsize=(6, 6))
-    scatter = axes.scatter(cat_means[:, 0], cat_means[:, 1], c=cat_labels, cmap="rainbow", s=0.2)
+    scatter = axes.scatter(cat_trgs[:, 0], cat_trgs[:, 1], c=cat_labels, cmap="rainbow", s=0.2)
     axes.legend(handles=scatter.legend_elements()[0], labels=range(10), fontsize=6)
     axes.tick_params(labelsize=6)
     fig.tight_layout()
@@ -67,10 +73,10 @@ def main():
     )
 
     model = VAE(channels=1, img_size=32, latent_dim=2).to(DEVICE)
-    state_dict = torch.load(args.CKPT)
+    state_dict = torch.load(args.MODEL_PARAMS)
     model.load_state_dict(state_dict)
 
-    scatter = plot_means(test_dl=test_dl, model=model, device=DEVICE)
+    scatter = vis_latent_space(test_dl=test_dl, model=model, target=args.TARGET, device=DEVICE)
     save_image(scatter, path=Path(args.SAVE_DIR)/"plot.jpg")
 
 if __name__ == "__main__":

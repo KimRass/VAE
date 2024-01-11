@@ -17,10 +17,10 @@ def get_args(to_upperse=True):
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--seed", type=int, default=888, required=False)
-    parser.add_argument("--n_epochs", type=int, default=200, required=False)
-    parser.add_argument("--batch_size", type=int, default=32, required=False)
+    parser.add_argument("--n_epochs", type=int, default=100, required=False)
+    parser.add_argument("--batch_size", type=int, default=64, required=False)
     parser.add_argument("--lr", type=float, default=0.0005, required=False)
-    parser.add_argument("--recon_weight", type=float, default=800, required=False)
+    parser.add_argument("--recon_weight", type=float, default=600, required=False)
     parser.add_argument("--data_dir", type=str, required=True)
     parser.add_argument("--save_dir", type=str, required=True)
 
@@ -54,30 +54,41 @@ def train_single_step(ori_image, model, optim, recon_weight, device):
 
 
 @torch.no_grad()
-def validate(val_dl, model, device):
+def validate(val_dl, model, recon_weight, device):
     model.eval()
 
+    cum_loss = 0
     cum_recon_loss = 0
     cum_kld_loss = 0
-    for ori_image, label in val_dl:
+    for ori_image, _ in val_dl:
         ori_image = ori_image.to(device)
         recon_image, mean, var = model(ori_image)
-        _, recon_loss, kld_loss = model.get_loss(
-            recon_image=recon_image, ori_image=ori_image, mean=mean, var=var,
+        loss, recon_loss, kld_loss = model.get_loss(
+            recon_image=recon_image,
+            ori_image=ori_image,
+            mean=mean,
+            var=var,
+            recon_weight=recon_weight,
         )
+        cum_loss += loss.item()
         cum_recon_loss += recon_loss.item()
         cum_kld_loss += kld_loss.item()
 
     model.train()
-    return cum_recon_loss / len(val_dl), cum_kld_loss / len(val_dl)
+    return (
+        cum_loss / len(val_dl),
+        cum_recon_loss / len(val_dl),
+        cum_kld_loss / len(val_dl),
+    )
 
 
 def train(n_epochs, train_dl, val_dl, model, optim, save_dir, recon_weight, device):
-    best_val_recon_loss = math.inf
+    # best_val_recon_loss = math.inf
+    best_val_loss = math.inf
     for epoch in range(1, n_epochs + 1):
         cum_recon_loss = 0
         cum_kld_loss = 0
-        for ori_image, label in tqdm(train_dl, leave=False):
+        for ori_image, _ in tqdm(train_dl, leave=False):
             recon_loss, kld_loss = train_single_step(
                 ori_image=ori_image,
                 model=model,
@@ -95,21 +106,26 @@ def train(n_epochs, train_dl, val_dl, model, optim, save_dir, recon_weight, devi
         log += f"[ Train KLD loss: {train_kld_loss:.4f} ]"
         print(log)
 
-        val_recon_loss, val_kld_loss = validate(val_dl, model, device)
-        if val_recon_loss < best_val_recon_loss:
-            best_val_recon_loss = val_recon_loss
+        val_loss, val_recon_loss, val_kld_loss = validate(
+            val_dl=val_dl, model=model, recon_weight=recon_weight, device=device,
+        )
+        # if val_recon_loss < best_val_recon_loss:
+        if val_loss < best_val_loss:
+            # best_val_recon_loss = val_recon_loss
+            best_val_loss = val_loss
             torch.save(
                 model.state_dict(),
-                str(Path(save_dir)/f"epoch_{epoch}-val_recon_loss_{val_recon_loss:.4f}.pth"),
+                str(Path(save_dir)/f"epoch_{epoch}-val_loss_{val_loss:.4f}.pth"),
             )
 
         log = f"[ Val recon loss: {val_recon_loss:.4f} ]"
         log += f"[ Val kld loss: {val_kld_loss:.4f} ]"
-        log += f"[ Best val loss: {best_val_recon_loss:.4f} ]"
+        # log += f"[ Best val recon loss: {best_val_recon_loss:.4f} ]"
+        log += f"[ Best val loss: {best_val_loss:.4f} ]"
         print(log)
 
         gen_image = model.sample(n_samples=train_dl.batch_size, device=device)
-        gen_grid = image_to_grid(gen_image, n_cols=4)
+        gen_grid = image_to_grid(gen_image, n_cols=8)
         save_image(gen_grid, Path(save_dir)/f"epoch_{epoch}.jpg")
 
 
@@ -122,9 +138,7 @@ def main():
         data_dir=args.DATA_DIR, batch_size=args.BATCH_SIZE, n_cpus=0,
     )
 
-    model = VAE(
-        channels=1, img_size=32, latent_dim=2, 
-    ).to(DEVICE)
+    model = VAE(channels=1, img_size=32, latent_dim=2).to(DEVICE)
     optim = AdamW(model.parameters(), lr=args.LR)
 
     train(
