@@ -41,7 +41,6 @@ class Encoder(nn.Module):
         self.conv_block2 = ConvBlock(32, 64, transposed=False)
         self.conv_block3 = ConvBlock(64, 64, transposed=False)
         self.conv_block4 = ConvBlock(64, 64, transposed=False)
-        # self.conv_block5 = ConvBlock(64, 64, transposed=False)
 
         enc_out_dim = get_dim(img_size)
         in_features = 64 * enc_out_dim * enc_out_dim
@@ -53,7 +52,6 @@ class Encoder(nn.Module):
         x = self.conv_block2(x)
         x = self.conv_block3(x)
         x = self.conv_block4(x)
-        # x = self.conv_block5(x)
 
         x = torch.flatten(x, start_dim=1)
         mean = self.mean_proj(x)
@@ -70,7 +68,6 @@ class Decoder(nn.Module):
         out_features = 64 * self.dec_in_dim * self.dec_in_dim
         self.code_proj = nn.Linear(latent_dim, out_features)
 
-        # self.conv_block1 = ConvBlock(64, 64, transposed=True)
         self.conv_block2 = ConvBlock(64, 64, transposed=True)
         self.conv_block3 = ConvBlock(64, 64, transposed=True)
         self.conv_block4 = ConvBlock(64, 32, transposed=True)
@@ -82,7 +79,6 @@ class Decoder(nn.Module):
         x = self.code_proj(x)
         x = x.view(-1, 64, self.dec_in_dim, self.dec_in_dim)
 
-        # x = self.conv_block1(x)
         x = self.conv_block2(x)
         x = self.conv_block3(x)
         x = self.conv_block4(x)

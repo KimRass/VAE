@@ -9,7 +9,7 @@
 ## 2) Standard Deviation of MNIST Test Set
 - <img src="https://github.com/KimRass/KimRass/assets/67457712/fa0a9e74-8737-44d4-b731-34bc6b1422a2" width="400">
 
-# 3. Theorectical Background
+# 3. Theoretical Background
 ## 1) Bayes' Theorem [3]
 $$P(A \vert B) = \frac{P(B \vert A)P(A)}{P(B)}$$
 - $P(A \vert B)$ is a conditional probability or posterior probability of $A$ given $B$.
