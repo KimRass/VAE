@@ -124,11 +124,9 @@ class VAE(nn.Module):
         mean: torch.Tensor,
         var: torch.Tensor,
         recon_weight: int,
-    # ) -> torch.Tensor:
     ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         recon_loss = F.mse_loss(recon_image, ori_image, reduction="mean")
         kld_loss = -0.5 * torch.mean(torch.sum(1 + torch.log(var) - mean ** 2 - var, dim=1), dim=0)
-        # return self.recon_weight * recon_loss + kld_loss
         loss = recon_weight * recon_loss + kld_loss
         return loss, recon_loss, kld_loss
 
@@ -139,7 +137,6 @@ class VAE(nn.Module):
 
 
 if __name__ == "__main__":
-    # img_size = 64
     img_size = 28
     latent_dim = 256
     recon_weight = 0.1
