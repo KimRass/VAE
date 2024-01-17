@@ -9,7 +9,11 @@
 ## 2) Standard Deviation of MNIST Test Set
 - <img src="https://github.com/KimRass/KimRass/assets/67457712/fa0a9e74-8737-44d4-b731-34bc6b1422a2" width="400">
 
-# 3. Theoretical Background
+# 3. Image Reconstruction
+## 1) MNIST Test Set
+- <img src="https://github.com/KimRass/KimRass/assets/67457712/c08037a5-de9e-411a-81f4-6921b07fd402" width="800">
+
+# 4. Theoretical Background
 ## 1) Bayes' Theorem [3]
 $$P(A \vert B) = \frac{P(B \vert A)P(A)}{P(B)}$$
 - $P(A \vert B)$ is a conditional probability or posterior probability of $A$ given $B$.
@@ -36,7 +40,7 @@ $$
 \end{align}
 $$
 
-# 4. References
+# 5. References
 - [1] [Auto Encoding Variational Bayes](https://github.com/KimRass/VAE/blob/main/papers/auto_encoding_variational_bayes.pdf)
 - [2] [Evidence lower bound](https://en.wikipedia.org/wiki/Evidence_lower_bound)
 - [3] [Bayes' theorem](https://en.wikipedia.org/wiki/Bayes%27_theorem)

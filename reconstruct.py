@@ -16,7 +16,7 @@ def get_args(to_upperse=True):
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--seed", type=int, default=888, required=False)
-    parser.add_argument("--batch_size", type=int, default=32, required=False)
+    parser.add_argument("--batch_size", type=int, default=128, required=False)
     parser.add_argument("--model_params", type=str, required=True)
     parser.add_argument("--data_dir", type=str, required=True)
     parser.add_argument("--save_dir", type=str, required=True)
@@ -34,12 +34,14 @@ def get_args(to_upperse=True):
 
 @torch.no_grad()
 def reconstruct(test_dl, model, batch_size, save_dir, device):
+    assert batch_size % 4 == 0, "The `batch_size` argument must be a multiple of 4"
+
     for idx, (ori_image, _) in enumerate(tqdm(test_dl, leave=False), start=1):
         ori_image = ori_image.to(device)
 
         recon_image, _, _ = model(ori_image)
         concat_image = torch.cat([ori_image, recon_image], dim=0)
-        grid = image_to_grid(concat_image, n_cols=batch_size)
+        grid = image_to_grid(concat_image, n_cols=batch_size // 4)
         save_image(grid, Path(save_dir)/f"{idx}.jpg")
 
 
