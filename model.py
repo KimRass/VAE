@@ -118,7 +118,8 @@ class VAE(nn.Module):
         x = self.decode(z)
         return x, mean, var
 
-    def get_loss(self, ori_image: torch.Tensor, recon_weight: int,
+    def get_loss(
+        self, ori_image: torch.Tensor, recon_weight: int,
     ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         recon_image, mean, var = self(ori_image)
 

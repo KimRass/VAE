@@ -69,6 +69,13 @@ $$
 \end{align}
 $$
 
+# Questions
+## 왜 reparametrization trick?
+## 평균과 분산 시각화의 의미
+## 색깔 구분이 좀 더 잘 되는 팔레트는?
+## KLD loss 공식 유도
+## 논문 읽기, Monte Carlo, 왜 샘플링 한 번만?
+
 # 4. References
 - [1] [Auto Encoding Variational Bayes](https://github.com/KimRass/VAE/blob/main/papers/auto_encoding_variational_bayes.pdf)
 - [2] [Evidence lower bound](https://en.wikipedia.org/wiki/Evidence_lower_bound)
