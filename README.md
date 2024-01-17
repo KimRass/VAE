@@ -1,6 +1,6 @@
 # 1. Pre-trained Parameters
 - Trained on MNIST for 84 epochs ([vae_mnist.pth](https://drive.google.com/file/d/1RLy035sMe-Wn1bgB9A60nmCc_tZbK3t7/view?usp=sharing))
-    - `seed`: 888`, `recon_weight`: 600, `lr`: 0.0005, `batch_size`: 64
+    - `seed`: 888, `recon_weight`: 600, `lr`: 0.0005, `batch_size`: 64
     - `val_recon_loss`: 0.1085, `val_kld_loss`: 7.3032
 
 # 2. Latent Space Visualization

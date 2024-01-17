@@ -38,14 +38,7 @@ def get_args(to_upperse=True):
 def train_single_step(ori_image, model, optim, recon_weight, device):
     ori_image = ori_image.to(device)
 
-    recon_image, mean, var = model(ori_image)
-    loss, recon_loss, kld_loss = model.get_loss(
-        recon_image=recon_image,
-        ori_image=ori_image,
-        mean=mean,
-        var=var,
-        recon_weight=recon_weight,
-    )
+    loss, recon_loss, kld_loss = model.get_loss(ori_image=ori_image, recon_weight=recon_weight)
 
     optim.zero_grad()
     loss.backward()
@@ -62,14 +55,8 @@ def validate(val_dl, model, recon_weight, device):
     cum_kld_loss = 0
     for ori_image, _ in val_dl:
         ori_image = ori_image.to(device)
-        recon_image, mean, var = model(ori_image)
-        loss, recon_loss, kld_loss = model.get_loss(
-            recon_image=recon_image,
-            ori_image=ori_image,
-            mean=mean,
-            var=var,
-            recon_weight=recon_weight,
-        )
+
+        loss, recon_loss, kld_loss = model.get_loss(ori_image=ori_image, recon_weight=recon_weight)
         cum_loss += loss.item()
         cum_recon_loss += recon_loss.item()
         cum_kld_loss += kld_loss.item()
