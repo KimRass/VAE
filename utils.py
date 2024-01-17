@@ -37,10 +37,10 @@ def denorm(tensor):
     return tensor
 
 
-def image_to_grid(image, n_cols):
+def image_to_grid(image, n_cols, padding=1):
     tensor = image.clone().detach().cpu()
     tensor = denorm(tensor)
-    grid = make_grid(tensor, nrow=n_cols, padding=1, pad_value=1)
+    grid = make_grid(tensor, nrow=n_cols, padding=1, pad_value=padding)
     grid.clamp_(0, 1)
     grid = TF.to_pil_image(grid)
     return grid

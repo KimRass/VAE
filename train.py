@@ -70,7 +70,6 @@ def validate(val_dl, model, recon_weight, device):
 
 
 def train(n_epochs, train_dl, val_dl, model, optim, save_dir, recon_weight, device):
-    # best_val_recon_loss = math.inf
     best_val_loss = math.inf
     for epoch in range(1, n_epochs + 1):
         cum_recon_loss = 0
@@ -96,9 +95,7 @@ def train(n_epochs, train_dl, val_dl, model, optim, save_dir, recon_weight, devi
         val_loss, val_recon_loss, val_kld_loss = validate(
             val_dl=val_dl, model=model, recon_weight=recon_weight, device=device,
         )
-        # if val_recon_loss < best_val_recon_loss:
         if val_loss < best_val_loss:
-            # best_val_recon_loss = val_recon_loss
             best_val_loss = val_loss
             torch.save(
                 model.state_dict(),
@@ -107,7 +104,6 @@ def train(n_epochs, train_dl, val_dl, model, optim, save_dir, recon_weight, devi
 
         log = f"[ Val recon loss: {val_recon_loss:.4f} ]"
         log += f"[ Val kld loss: {val_kld_loss:.4f} ]"
-        # log += f"[ Best val recon loss: {best_val_recon_loss:.4f} ]"
         log += f"[ Best val loss: {best_val_loss:.4f} ]"
         print(log)
 

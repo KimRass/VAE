@@ -44,11 +44,12 @@ def vis_latent_space(test_dl, model, target, device):
     labels = list()
     for ori_image, label in tqdm(test_dl, leave=False):
         ori_image = ori_image.to(device)
-        mean, var = model.encode(ori_image)
+
+        mean, var = model.encode(ori_image.detach())
         if target == "mean":
-            trgs.append(mean.cpu().detach().numpy())
+            trgs.append(mean.cpu().numpy())
         elif target == "std":
-            trgs.append((var ** 0.5).cpu().detach().numpy())
+            trgs.append((var ** 0.5).cpu().numpy())
         labels.append(label.cpu().detach().numpy())
     cat_trgs = np.concatenate(trgs, axis=0)
     cat_labels = np.concatenate(labels, axis=0)

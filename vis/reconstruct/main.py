@@ -36,6 +36,8 @@ def get_args(to_upperse=True):
 def reconstruct(test_dl, model, batch_size, save_dir, device):
     assert batch_size % 4 == 0, "The `batch_size` argument must be a multiple of 4"
 
+    model.eval()
+
     for idx, (ori_image, _) in enumerate(tqdm(test_dl, leave=False), start=1):
         ori_image = ori_image.to(device)
 
@@ -43,6 +45,8 @@ def reconstruct(test_dl, model, batch_size, save_dir, device):
         concat_image = torch.cat([ori_image, recon_image], dim=0)
         grid = image_to_grid(concat_image, n_cols=batch_size // 4)
         save_image(grid, Path(save_dir)/f"{idx}.jpg")
+
+    model.train()
 
 
 def main():

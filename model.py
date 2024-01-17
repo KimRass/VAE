@@ -4,6 +4,7 @@
 import torch
 from torch import nn
 from torch.nn import functional as F
+import numpy as np
 import math
 
 
@@ -130,6 +131,21 @@ class VAE(nn.Module):
         z = torch.randn(size=(n_samples, self.latent_dim), device=device)
         x = self.decode(z)
         return x
+
+    @torch.no_grad()
+    def sample_all(self, n_cells: int, device: torch.device) -> torch.Tensor:
+        self.eval()
+
+        images = list()
+        for row in np.linspace(start=2, stop=-2, num=n_cells):
+            for col in np.linspace(start=-2, stop=2, num=n_cells):
+                z = torch.tensor([[[[col.item(), row.item()]]]], device=device)
+                sample = self.decode(z.detach())
+                images.append(sample.cpu())
+        image = torch.cat(images)
+
+        self.train()
+        return image
 
 
 if __name__ == "__main__":
