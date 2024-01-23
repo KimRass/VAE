@@ -8,7 +8,7 @@ from tqdm import tqdm
 import argparse
 from pathlib import Path
 
-from utils import get_device, get_root_dir, save_image, set_seed, plt_to_pil
+from utils import get_device, save_image, set_seed, plt_to_pil
 from model import VAE
 from mnist import get_mnist_dls
 

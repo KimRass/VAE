@@ -17,6 +17,8 @@ python3 vis/encoder_output/main.py\
 ```
 - Mean and STD of MNIST Test Set
     - <img src="https://github.com/KimRass/KimRass/assets/67457712/d375b8c2-71ae-488a-b46e-7e1c8897ba9c" width="500">
+    - 평균의 경우 4와 9, 3과 5가 많이 겹쳐 있습니다.
+    - 표준편차의 경우 1에 가까워지도록 학습이 이루어졌으나 0에 가까운 값을 띄고 있습니다. 시각화를 통해 얻을 수 있는 인사이트는 크게 없는 것으로 보입니다.
 ## 2) Decoder Output
 ```bash
 python3 vis/decoder_output/main.py\
@@ -28,6 +30,7 @@ python3 vis/decoder_output/main.py\
 ```
 - Value from -2 to 2
     - <img src="https://github.com/KimRass/KimRass/assets/67457712/3febd7b3-9e8f-43db-ad16-af616a3428c3" width="500">
+    - Encoder output의 평균의 분포와 매우 유사함을 볼 수 있습니다.
 ## 3) Image Reconstruction
 ```bash
 python3 vis/reconstruct/main.py\
@@ -67,8 +70,6 @@ $$
 \end{align}
 $$
 <!-- ## 왜 reparametrization trick?
-## 평균과 분산 시각화의 의미
-## 색깔 구분이 좀 더 잘 되는 팔레트는?
 ## KLD loss 공식 유도
 ## 논문 읽기, Monte Carlo, 왜 샘플링 한 번만? -->
 
