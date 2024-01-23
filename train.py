@@ -108,7 +108,7 @@ def train(n_epochs, train_dl, val_dl, model, optim, save_dir, recon_weight, devi
         print(log)
 
         gen_image = model.sample(n_samples=train_dl.batch_size, device=device)
-        gen_grid = image_to_grid(gen_image, n_cols=8)
+        gen_grid = image_to_grid(gen_image, n_cols=int(train_dl.batch_size ** 0.5))
         save_image(gen_grid, Path(save_dir)/f"epoch_{epoch}.jpg")
 
 
