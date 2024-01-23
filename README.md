@@ -16,20 +16,22 @@ python3 vis/encoder_output/main.py\
     --save_dir="/.../workspace/VAE/vis/encoder_output"
 ```
 - Mean and STD of MNIST Test Set
-    - <img src="https://github.com/KimRass/KimRass/assets/67457712/d375b8c2-71ae-488a-b46e-7e1c8897ba9c" width="500">
+    - <img src="https://github.com/KimRass/KimRass/assets/67457712/d375b8c2-71ae-488a-b46e-7e1c8897ba9c" width="600">
     - 평균의 경우 4와 9, 3과 5가 많이 겹쳐 있습니다.
     - 표준편차의 경우 1에 가까워지도록 학습이 이루어졌으나 0에 가까운 값을 띄고 있습니다. 시각화를 통해 얻을 수 있는 인사이트는 크게 없는 것으로 보입니다.
 ## 2) Decoder Output
 ```bash
 python3 vis/decoder_output/main.py\
     --seed=888\ # Optional
-    --n_cells=20\ # Optional
+    --latent_min=-4\ # Optional
+    --latent_max=-4\ # Optional
+    --n_cells=32\ # Optional
     --model_params="/.../datasets/vae/vae_mnist.pth"\
     --data_dir="/.../datasets"\
     --save_dir="/.../workspace/VAE/vis/encoder_output"
 ```
-- Value from -2 to 2
-    - <img src="https://github.com/KimRass/KimRass/assets/67457712/3febd7b3-9e8f-43db-ad16-af616a3428c3" width="500">
+- `latent_min`: -4, `latent_max`: 4, `n_cells`: 32
+    - <img src="https://github.com/KimRass/KimRass/assets/67457712/d14e782f-9e9b-4bd3-b04c-2bdf84a032ce" width="600">
     - Encoder output의 평균의 분포와 매우 유사함을 볼 수 있습니다.
 ## 3) Image Reconstruction
 ```bash
@@ -60,7 +62,7 @@ $$
 &= \int \ln \bigg(\frac{P(z, x)}{q_{\phi}(z \vert x)}\bigg)q_{\phi}(z \vert x)dz + \int \ln \bigg(\frac{q_{\phi}(z \vert x)}{P(z \vert x)}\bigg)q_{\phi}(z \vert x)dz\\
 \end{align}
 $$
-- A basic result in variational inference is that minimizing the KL-divergence is equivalent to maximizing the log-likelihood [2].
+- A basic result in variational inference is that latent_minimizing the KL-divergence is equivalent to latent_maximizing the log-likelihood [2].
 $$
 \begin{align}
 \text{ELBO}

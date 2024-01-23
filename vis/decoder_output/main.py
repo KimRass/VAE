@@ -10,7 +10,9 @@ def get_args(to_upperse=True):
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--seed", type=int, default=888, required=False)
-    parser.add_argument("--n_cells", type=int, default=20, required=False)
+    parser.add_argument("--latent_min", type=int, default=-4, required=False)
+    parser.add_argument("--latent_max", type=int, default=4, required=False)
+    parser.add_argument("--n_cells", type=int, default=32, required=False)
     parser.add_argument("--model_params", type=str, required=True)
     parser.add_argument("--data_dir", type=str, required=True)
 
@@ -35,7 +37,12 @@ def main():
     state_dict = torch.load(args.MODEL_PARAMS)
     model.load_state_dict(state_dict)
 
-    image = model.sample_all(n_cells=args.N_CELLS, device=DEVICE)
+    image = model.sample_all(
+        latent_min=args.LATENT_MIN,
+        latent_max=args.LATENT_MAX,
+        n_cells=args.N_CELLS,
+        device=DEVICE,
+    )
     grid = image_to_grid(image, n_cols=args.N_CELLS, padding=0)
     save_image(grid, path=PAR_DIR/"decoder_output.jpg")
 

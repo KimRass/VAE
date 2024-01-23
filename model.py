@@ -134,12 +134,14 @@ class VAE(nn.Module):
         return x
 
     @torch.no_grad()
-    def sample_all(self, n_cells: int, device: torch.device) -> torch.Tensor:
+    def sample_all(
+        self, latent_min: int, latent_max: int, n_cells:int, device: torch.device,
+    ) -> torch.Tensor:
         self.eval()
 
         images = list()
-        for row in np.linspace(start=2, stop=-2, num=n_cells):
-            for col in np.linspace(start=-2, stop=2, num=n_cells):
+        for row in np.linspace(start=latent_min, stop=latent_max, num=n_cells):
+            for col in np.linspace(start=latent_min, stop=latent_max, num=n_cells):
                 z = torch.tensor([[[[col.item(), row.item()]]]], device=device)
                 sample = self.decode(z.detach())
                 images.append(sample.cpu())
