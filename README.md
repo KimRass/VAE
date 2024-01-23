@@ -16,7 +16,7 @@ python3 vis/encoder_output/main.py\
     --save_dir="/.../workspace/VAE/vis/encoder_output"
 ```
 - Mean and STD of MNIST Test Set
-    - <img src="https://github.com/KimRass/KimRass/assets/67457712/d375b8c2-71ae-488a-b46e-7e1c8897ba9c" width="400">
+    - <img src="https://github.com/KimRass/KimRass/assets/67457712/d375b8c2-71ae-488a-b46e-7e1c8897ba9c" width="500">
 ## 2) Decoder Output
 ```bash
 python3 vis/decoder_output/main.py\
@@ -27,7 +27,7 @@ python3 vis/decoder_output/main.py\
     --save_dir="/.../workspace/VAE/vis/encoder_output"
 ```
 - Value from -2 to 2
-    - <img src="https://github.com/KimRass/KimRass/assets/67457712/3febd7b3-9e8f-43db-ad16-af616a3428c3" width="400">
+    - <img src="https://github.com/KimRass/KimRass/assets/67457712/3febd7b3-9e8f-43db-ad16-af616a3428c3" width="500">
 ## 3) Image Reconstruction
 ```bash
 python3 vis/reconstruct/main.py\
