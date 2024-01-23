@@ -8,7 +8,7 @@ from tqdm import tqdm
 import argparse
 from pathlib import Path
 
-from utils import get_device, save_image, set_seed, plt_to_pil
+from utils import get_device, get_root_dir, save_image, set_seed, plt_to_pil
 from model import VAE
 from mnist import get_mnist_dls
 
@@ -18,12 +18,8 @@ def get_args(to_upperse=True):
 
     parser.add_argument("--seed", type=int, default=888, required=False)
     parser.add_argument("--batch_size", type=int, default=64, required=False)
-    parser.add_argument(
-        "--target", type=str, choices=["mean", "std"], default="mean", required=False,
-    )
     parser.add_argument("--model_params", type=str, required=True)
     parser.add_argument("--data_dir", type=str, required=True)
-    parser.add_argument("--save_dir", type=str, required=True)
 
     args = parser.parse_args()
 
@@ -37,27 +33,32 @@ def get_args(to_upperse=True):
 
 
 @torch.no_grad()
-def vis_latent_space(test_dl, model, target, device):
+def vis_latent_space(test_dl, model, device):
     model.eval()
 
-    trgs = list()
+    means = list()
+    stds = list()
     labels = list()
     for ori_image, label in tqdm(test_dl, leave=False):
         ori_image = ori_image.to(device)
 
         mean, var = model.encode(ori_image.detach())
-        if target == "mean":
-            trgs.append(mean.cpu().numpy())
-        elif target == "std":
-            trgs.append((var ** 0.5).cpu().numpy())
+        means.append(mean.cpu().numpy())
+        stds.append((var ** 0.5).cpu().numpy())
         labels.append(label.cpu().detach().numpy())
-    cat_trgs = np.concatenate(trgs, axis=0)
+    cat_means = np.concatenate(means, axis=0)
+    cat_stds = np.concatenate(stds, axis=0)
     cat_labels = np.concatenate(labels, axis=0)
 
-    fig, axes = plt.subplots(1, 1, figsize=(6, 6))
-    scatter = axes.scatter(cat_trgs[:, 0], cat_trgs[:, 1], c=cat_labels, cmap="rainbow", s=0.2)
-    axes.legend(handles=scatter.legend_elements()[0], labels=range(10), fontsize=6)
-    axes.tick_params(labelsize=6)
+    fig, axes = plt.subplots(2, 1, figsize=(7, 12))
+
+    scatter_mean = axes[0].scatter(cat_means[:, 0], cat_means[:, 1], c=cat_labels, cmap="tab10", s=0.2)
+    axes[0].legend(handles=scatter_mean.legend_elements()[0], labels=range(10), fontsize=6)
+    axes[0].axis([-4, 4, -4, 4])
+
+    scatter_std = axes[1].scatter(cat_stds[:, 0], cat_stds[:, 1], c=cat_labels, cmap="tab10", s=0.2)
+    axes[1].legend(handles=scatter_std.legend_elements()[0], labels=range(10), fontsize=6)
+    axes[1].axis([0, 0.2, 0, 0.2])
     fig.tight_layout()
 
     model.train()
@@ -68,6 +69,7 @@ def main():
     args = get_args()
     set_seed(args.SEED)
     DEVICE = get_device()
+    PAR_DIR = Path(__file__).parent.resolve()
 
     _ , _, test_dl = get_mnist_dls(
         data_dir=args.DATA_DIR, batch_size=args.BATCH_SIZE, n_cpus=0,
@@ -77,8 +79,8 @@ def main():
     state_dict = torch.load(args.MODEL_PARAMS)
     model.load_state_dict(state_dict)
 
-    scatter = vis_latent_space(test_dl=test_dl, model=model, target=args.TARGET, device=DEVICE)
-    save_image(scatter, path=Path(args.SAVE_DIR)/"plot.jpg")
+    scatter = vis_latent_space(test_dl=test_dl, model=model, device=DEVICE)
+    save_image(scatter, path=PAR_DIR/"encoder_output.jpg")
 
 if __name__ == "__main__":
     main()

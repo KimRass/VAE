@@ -1,7 +1,3 @@
-import sys
-
-sys.path.insert(0, "/Users/jongbeomkim/Desktop/workspace/VAE")
-
 import torch
 from tqdm import tqdm
 import argparse
@@ -19,7 +15,6 @@ def get_args(to_upperse=True):
     parser.add_argument("--batch_size", type=int, default=128, required=False)
     parser.add_argument("--model_params", type=str, required=True)
     parser.add_argument("--data_dir", type=str, required=True)
-    parser.add_argument("--save_dir", type=str, required=True)
 
     args = parser.parse_args()
 
@@ -53,6 +48,7 @@ def main():
     args = get_args()
     set_seed(args.SEED)
     DEVICE = get_device()
+    PAR_DIR = Path(__file__).parent.resolve()
 
     _ , _, test_dl = get_mnist_dls(
         data_dir=args.DATA_DIR, batch_size=args.BATCH_SIZE, n_cpus=0,
@@ -67,7 +63,7 @@ def main():
         test_dl=test_dl,
         model=model,
         batch_size=args.BATCH_SIZE,
-        save_dir=args.SAVE_DIR,
+        save_dir=PAR_DIR/"examples",
         device=DEVICE,
     )
 

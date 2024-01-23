@@ -15,10 +15,8 @@ python3 vis/encoder_output/main.py\
     --data_dir="/.../datasets"\
     --save_dir="/.../workspace/VAE/vis/encoder_output"
 ```
-- Mean of MNIST Test Set
-    - <img src="https://github.com/KimRass/KimRass/assets/67457712/f1c33bc9-96fa-4f01-8bf5-f182e3bb0b13" width="400">
-- Standard Deviation of MNIST Test Set
-    - <img src="https://github.com/KimRass/KimRass/assets/67457712/fa0a9e74-8737-44d4-b731-34bc6b1422a2" width="400">
+- Mean and STD of MNIST Test Set
+    - <img src="https://github.com/KimRass/KimRass/assets/67457712/d375b8c2-71ae-488a-b46e-7e1c8897ba9c" width="400">
 ## 2) Decoder Output
 ```bash
 python3 vis/decoder_output/main.py\
@@ -68,13 +66,11 @@ $$
 &= \int \ln \big(P(x \vert z)\big)q_{\phi}(z \vert x)dz + \int \ln \bigg(\frac{P(z)}{q_{\phi}(z \vert x)}\bigg)q_{\phi}(z \vert x)dz\\
 \end{align}
 $$
-
-# Questions
-## 왜 reparametrization trick?
+<!-- ## 왜 reparametrization trick?
 ## 평균과 분산 시각화의 의미
 ## 색깔 구분이 좀 더 잘 되는 팔레트는?
 ## KLD loss 공식 유도
-## 논문 읽기, Monte Carlo, 왜 샘플링 한 번만?
+## 논문 읽기, Monte Carlo, 왜 샘플링 한 번만? -->
 
 # 4. References
 - [1] [Auto Encoding Variational Bayes](https://github.com/KimRass/VAE/blob/main/papers/auto_encoding_variational_bayes.pdf)
