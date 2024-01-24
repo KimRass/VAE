@@ -33,7 +33,7 @@ def get_args(to_upperse=True):
 
 
 @torch.no_grad()
-def vis_latent_space(test_dl, model, device):
+def vis_encoder_output(test_dl, model, device):
     model.eval()
 
     means = list()
@@ -79,7 +79,7 @@ def main():
     state_dict = torch.load(args.MODEL_PARAMS)
     model.load_state_dict(state_dict)
 
-    scatter = vis_latent_space(test_dl=test_dl, model=model, device=DEVICE)
+    scatter = vis_encoder_output(test_dl=test_dl, model=model, device=DEVICE)
     save_image(scatter, path=PAR_DIR/"encoder_output.jpg")
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
 # 1. Pre-trained Parameters
 - Trained on MNIST for 84 epochs ([vae_mnist.pth](https://drive.google.com/file/d/1RLy035sMe-Wn1bgB9A60nmCc_tZbK3t7/view?usp=sharing))
-    - `seed`: 888, `recon_weight`: 600, `lr`: 0.0005, `batch_size`: 64
-    - `val_recon_loss`: 0.1085, `val_kld_loss`: 7.3032
+    - `seed=888, recon_weight=600, lr=0.0005, batch_size=64`
+    - `val_recon_loss=0.1085, val_kld_loss=7.3032`
 
 # 2. Visualization
 ## 1) Encoder Output
@@ -30,8 +30,8 @@ python3 vis/decoder_output/main.py\
     --data_dir="/.../datasets"\
     --save_dir="/.../workspace/VAE/vis/encoder_output"
 ```
-- `latent_min`: -4, `latent_max`: 4, `n_cells`: 32
-    - <img src="https://github.com/KimRass/KimRass/assets/67457712/d14e782f-9e9b-4bd3-b04c-2bdf84a032ce" width="600">
+- `latent_min=-4, latent_max=4, n_cells=32`
+    - <img src="https://github.com/KimRass/KimRass/assets/67457712/8f28fa49-24a9-4916-b9a7-960feda9b7d4" width="600">
     - Encoder output의 평균의 분포와 매우 유사함을 볼 수 있습니다.
 ## 3) Image Reconstruction
 ```bash
