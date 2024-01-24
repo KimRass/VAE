@@ -1,5 +1,5 @@
 # References:
-    # https://github.com/davidADSP/GDL_code/blob/master/03_04_vae_digits_analysis.ipynb
+    # https://github.com/davidADSP/Generative_Deep_Learning_2nd_Edition/blob/main/notebooks/03_vae/02_vae_fashion/vae_fashion.ipynb
 
 import torch
 import numpy as np
